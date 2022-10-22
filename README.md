@@ -1,4 +1,10 @@
-# Install Instructions
+# CS-471, Student Loan System
+
+This application was created as submission for the final project for CS-471, Software Engineering at Kettering University. The project contains four features of a student loan application - a secure login portal, the ability for students to submit loans, the ability for bank officials to approve/reject loans, and a monthly payment calculator for students to keep track of loan payments.
+
+The team responsible for this project includes Alex Keeler, Matthew Muller, Evan Mortier, and Jason Sedluk.
+
+## Install Instructions
 
 Click on the 3 dots next to "clone" and download repository (Remember where you installed this for later!)
 
