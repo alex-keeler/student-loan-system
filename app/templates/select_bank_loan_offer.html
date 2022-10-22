@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Select a Loan Plan</h1>
+
+        <ul class="display-list">
+            {% for loan_offer in loan_offers %}
+                <li class="display-list-item">
+                    <div>
+                        <strong>Bank: </strong>
+                        <span>{{ bank_dict[loan_offer.bank_id].name }}</span>
+                    </div>
+                    <div>
+                        <strong>Interest Rate: </strong>
+                        <span>{{ loan_offer.interest_rate }}%</span>
+                    </div>
+                    <div>
+                        <strong>Interest Type: </strong>
+                        <span>{{ loan_offer.interest_type }}</span>   
+                    </div>
+                    <a class="button" href="{{ url_for('loan_application_page', bank_loan_offer_id=loan_offer.id) }}">Select This Plan</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

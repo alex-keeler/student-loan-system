@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Review Your Loans</h1>
+        <div style = 'width: 100%; text-align: center'>
+            <a class="button" href="{{ url_for('select_bank_loan_offer_page')}}">Apply for Loans Now!</a>
+        </div>
+        <ul class="display-list">
+            {% for loan in loans %}
+                <li class="display-list-item">
+                    <div>
+                        <strong>Bank: </strong>
+                        <span>{{ bank_dict[loan_offers_dict[loan.bank_loan_offer_id].bank_id].name }}</span>
+                    </div>
+                    <div>
+                        <strong>Interest Rate: </strong>
+                        <span>{{ loan_offers_dict[loan.bank_loan_offer_id].interest_rate }}%</span>
+                    </div>
+                    <div>
+                        <strong>Interest Type: </strong>
+                        <span>{{ loan_offers_dict[loan.bank_loan_offer_id].interest_type }}</span>   
+                    </div>
+                    <div>
+                        <strong>Name: </strong>
+                        <span>{{ loan.name }}</span>
+                    </div>
+                    <div>
+                        <strong>Loan Amount: </strong>
+                        <span>${{ loan.loan_amount }}</span>
+                    </div>
+                    <div>
+                        <strong>Loan Term: </strong>
+                        <span>{{ loan.loan_term_months }} months</span>
+                    </div>
+                    <div>
+                        <strong>Application Date: </strong>
+                        <span>{{loan.application_date}}</span>
+                    </div>
+                    <div>
+                        <strong>Status: </strong>
+                        <span>{{loan.status}}</span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

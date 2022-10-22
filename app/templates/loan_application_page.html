@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Apply for a Loan</h1>
+        <h3 class="centered">{{ bank.name }}, 
+            {{ bank_loan_offer.interest_rate }}% 
+            {{ bank_loan_offer.interest_type }} Interest Rate
+        </h3>
+        {{ wtf.quick_form(form) }}
+    </div>
+{% endblock %}

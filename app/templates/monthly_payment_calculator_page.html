@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Monthly Payment Calculator</h1>
+
+        <div style="padding: 10px; font-size: 14pt;">
+            <div><span style="font-weight: 700;">Total monthly payment: </span><span id="totalMonthlyPayment"></span></div>
+            <div><span style="font-weight: 700;">Maximum loan term: </span><span id="maximumLoanTerm"></span></div>
+        </div>
+        <div id="display-list-container">
+            <ul class="display-list" id="calculator-loan-list"></ul>
+        </div>
+    </div>
+{% endblock %}
+{% block app_scripts %}
+    <script>
+         $(document).ready(function() {
+            $.ajax({
+                url: "get-all-approved-loans-student-json",
+                dataType: 'json',
+                success: function(result){
+                    console.log('got data: ', result);
+                    window.loans = result;
+                    $(result).each(function(index, loan) {
+                        var principle = parseFloat(loan.loan_amount);
+                        var monthlyRate = parseFloat(loan.offer.interest_rate) / 100 / 12;
+                        var maxLoanTerm = parseInt(loan.loan_term_months)
+
+                        var fieldContainer = $("<li class='display-list-item'/>");
+                        var loanAmountField = $("<div><span style='font-weight: 700;'>Loan amount: </span> $" + loan.loan_amount + "</div>");
+                        var interestRateField = $("<div><span style='font-weight: 700;'>Interest rate: </span> " + loan.offer.interest_rate + "%</div>");
+                        var maxLoanTermField = $("<div><span style='font-weight: 700;'>Maximum loan term: </span> " + loan.loan_term_months + " months</div>");
+                        var monthlyPaymentField = $("<div/>");
+                        var monthlyPaymentLabel = $("<label style='width: 220px;'>Monthly Payment Amount ($): </label>");
+                        var monthlyPaymentInput = $("<input type='number' class='monthly-payment-input' data-loan-id='" + loan.id + "' value='" + calculateMonthlyPayment(principle, monthlyRate, maxLoanTerm).toFixed(2) + "'>");
+                        var invalidMonthlyPaymentMessage = $("<div class='error' style='display: none;'>You can't pay off the loan within the loan term with that monthly contribution!</div>");
+                        var loanTermField = $("<div/>");
+                        var loanTermLabel = $("<label style='width: 220px;'>Loan term (months): </label>");
+                        var loanTermInput = $("<input type='number' class='loan-term-input' data-loan-id='" + loan.id + "' value='" + loan.loan_term_months + "'>");
+                        var invalidLoanTermMessage = $("<div class='error' style='display: none;'>Invalid loan term! (Must be a full number between 1 and the maximum loan term)</div>");
+
+                        var list = $("#calculator-loan-list");
+
+                        fieldContainer.append(loanAmountField);
+                        fieldContainer.append(interestRateField);
+                        fieldContainer.append(maxLoanTermField);
+                        monthlyPaymentField.append(monthlyPaymentLabel);
+                        monthlyPaymentField.append(monthlyPaymentInput);
+                        monthlyPaymentField.append(invalidMonthlyPaymentMessage);
+                        fieldContainer.append(monthlyPaymentField);
+                        loanTermField.append(loanTermLabel);
+                        loanTermField.append(loanTermInput);
+                        loanTermField.append(invalidLoanTermMessage);
+                        fieldContainer.append(loanTermField);
+                        list.append(fieldContainer);
+
+                        loanTermInput.on("change", function() {
+                            var loanTerm = parseFloat(loanTermInput.val());
+                            if (Number.isInteger(loanTerm) && loanTerm >= 1 && loanTerm <= maxLoanTerm) {
+                                invalidLoanTermMessage.hide();
+                                invalidMonthlyPaymentMessage.hide();
+
+                                var monthlyPayment = calculateMonthlyPayment(principle, monthlyRate, loanTerm);
+
+                                monthlyPaymentInput.val(monthlyPayment.toFixed(2));
+
+                                $("#totalMonthlyPayment").text("$" + findTotalMonthlyPayment().toFixed(2));
+                                $("#maximumLoanTerm").text(findMaxLoanTerm() + " months");
+                            } else {
+                                invalidLoanTermMessage.show();
+                                invalidMonthlyPaymentMessage.hide();
+                                monthlyPaymentInput.val("");
+                            }
+                        });
+
+                        monthlyPaymentInput.on("change", function() {
+                            var monthlyPayment = parseFloat(monthlyPaymentInput.val());
+
+                            if (monthlyPayment > (monthlyRate * principle)) {
+                                invalidMonthlyPaymentMessage.hide();
+                                invalidLoanTermMessage.hide();
+
+                                var loanTerm = calculateLoanTerms(principle, monthlyRate, monthlyPayment);
+
+                                if (loanTerm <= loan.loan_term_months) {
+                                    loanTermInput.val(Math.ceil(loanTerm));
+                                    $("#totalMonthlyPayment").text("$" + findTotalMonthlyPayment().toFixed(2));
+                                    $("#maximumLoanTerm").text(findMaxLoanTerm() + " months");
+                                } else {
+                                    invalidMonthlyPaymentMessage.show();
+                                    invalidLoanTermMessage.hide();
+                                    loanTermInput.val("");
+                                }
+                            } else {
+                                invalidMonthlyPaymentMessage.show();
+                                invalidLoanTermMessage.hide();
+                                loanTermInput.val("");
+                            }
+                        });
+
+                    });
+
+                    $("#totalMonthlyPayment").text("$" + findTotalMonthlyPayment().toFixed(2));
+                    $("#maximumLoanTerm").text(findMaxLoanTerm() + " months");
+
+                    if (result.length == 0) {
+                        var noLoansMessage = $("<h3 class='centered'>You have no approved loans.</h3>");
+                        $("#display-list-container").append(noLoansMessage);
+                    }
+                },
+                error: function(result){
+                    console.error(result);
+                }
+            });
+        });
+
+        function calculateMonthlyPayment(principle, monthlyRate, loanTerm) {
+            var monthlyPayment = principle * 
+                ((monthlyRate * Math.pow((1 + monthlyRate), loanTerm)) / 
+                (Math.pow(1 + monthlyRate, loanTerm) - 1));
+
+            return monthlyPayment;
+        }
+
+        function calculateLoanTerms(principle, monthlyRate, monthlyPayment) {
+            var loanTerm = Math.log(monthlyPayment / 
+                (monthlyPayment - monthlyRate * principle)) / 
+                Math.log(1 + monthlyRate);
+
+            return loanTerm;
+        }
+
+        function findTotalMonthlyPayment() {
+            var sum = 0.0;
+
+            $(".monthly-payment-input").each(function(index, input) {
+                if ($(input).val()) {
+                    var monthlyPayment = parseFloat($(input).val());                    
+                    sum += monthlyPayment;
+                }
+            });
+
+            return sum;
+        }
+
+        function findMaxLoanTerm() {
+            var maxLoanTerm = 0;
+
+            $(".loan-term-input").each(function(index, input) {
+                if ($(input).val()) {
+                    var loanTerm = parseInt($(input).val());
+                    if (loanTerm > maxLoanTerm) {
+                        maxLoanTerm = loanTerm;
+                    }
+                }
+            });
+
+            return maxLoanTerm;
+        }
+    </script>
+{% endblock %}

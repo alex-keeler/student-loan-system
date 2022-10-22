@@ -1,0 +1,46 @@
+.alert {
+    margin: 5px 15px;
+    display: inline-block;
+}
+
+.alert-container {
+    text-align: center;
+}
+
+.centered {
+    text-align: center;
+}
+
+.navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 0;
+}
+
+.navbar__title {
+    font-weight: 700;
+}
+
+.navbar__link {
+    padding: 0px 10px;
+    color: #ccc;
+}
+
+.navbar__link:hover {
+    color: #aaa;
+}
+
+.app-content {
+    padding: 10px 30px;
+    height: 100%;
+}
+
+.footer {
+    height: 30px;
+}
+
+.error {
+    margin-left: 10px;
+    color: red;
+}

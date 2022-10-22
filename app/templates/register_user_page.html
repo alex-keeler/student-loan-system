@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Register</h1>
+        {{ wtf.quick_form(form) }}
+    </div>
+    <hr>
+    <div class='text-center'>
+        Already have an account? <a href="{{ url_for('login_page') }}">Login</a>
+    </div>
+{% endblock %}
+
+{% block app_scripts %}
+    <script>
+        $(document).ready(function() {
+            setupUserTypeFormFields($("#user_type_select").val());
+
+            $("#user_type_select").on('change', function() {
+                setupUserTypeFormFields($("#user_type_select").val());
+            });
+        });
+
+        function setupUserTypeFormFields(userType) {
+            switch (userType) {
+                case 'STUDENT':
+                    var universitySelect = $("#university_select");
+                    universitySelect.parent().show();
+                    universitySelect.parent().addClass("required");
+
+                    var organizationId = $("#organization_id");
+                    var organizationIdLabel = organizationId.siblings("label")[0];
+                    organizationIdLabel.innerHTML = "Student ID: ";
+
+                    var bankSelect = $("#bank_select");
+                    bankSelect.parent().hide();
+                    bankSelect.parent().removeClass("required");
+
+                    var socialSecurityLastFour = $("#social_security_last_four");
+                    socialSecurityLastFour.parent().show();
+                    socialSecurityLastFour.parent().addClass("required");
+                    socialSecurityLastFour.val("");
+
+                    break;
+                case 'SCHOOL_BILLING_OFFICIAL':
+                var universitySelect = $("#university_select");
+                    universitySelect.parent().show();
+                    universitySelect.parent().addClass("required");
+
+                    var organizationId = $("#organization_id");
+                    var organizationIdLabel = organizationId.siblings("label")[0];
+                    organizationIdLabel.innerHTML = "Employee ID: ";
+
+                    var bankSelect = $("#bank_select");
+                    bankSelect.parent().hide();
+                    bankSelect.parent().removeClass("required");
+
+                    var socialSecurityLastFour = $("#social_security_last_four");
+                    socialSecurityLastFour.parent().hide()
+                    socialSecurityLastFour.parent().removeClass("required");
+                    socialSecurityLastFour.val(0);
+
+                    break;
+                case 'BANK_OFFICIAL':
+                    var universitySelect = $("#university_select");
+                    universitySelect.parent().hide();
+                    universitySelect.parent().removeClass("required");
+
+                    var organizationId = $("#organization_id");
+                    var organizationIdLabel = organizationId.siblings("label")[0];
+                    organizationIdLabel.innerHTML = "Employee ID: ";
+
+                    var bankSelect = $("#bank_select");
+                    bankSelect.parent().show();
+                    bankSelect.parent().addClass("required");
+
+                    var socialSecurityLastFour = $("#social_security_last_four");
+                    socialSecurityLastFour.parent().hide();
+                    socialSecurityLastFour.parent().removeClass("required");
+                    socialSecurityLastFour.val(0);
+
+                    break;
+                default:
+                    var universitySelect = $("#university_select");
+                    universitySelect.parent().hide();
+
+                    var organizationId = $("#organization_id");
+                    organizationId.parent().hide();
+
+                    var bankSelect = $("#bank_select");
+                    bankSelect.parent().hide();
+
+                    var socialSecurityLastFour = $("#social_security_last_four");
+                    socialSecurityLastFour.parent().hide();
+                    socialSecurityLastFour.val(0);
+            }
+        }
+    </script>
+{% endblock %}

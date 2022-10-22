@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class='container' style='width: 50%'>
+        <h1 class="centered">Review Your Loans</h1>
+
+        <ul class="display-list">
+            {% for loan in loans %}
+                <li class="display-list-item">
+                    <div>
+                        <strong>Student: </strong>
+                        <span>{{ student_dict[loan.student_user_id].first_name }} {{ student_dict[loan.student_user_id].last_name }}</span>
+                    </div>
+                    <div>
+                        <strong>Student Email Address: </strong>
+                        <span>{{ student_dict[loan.student_user_id].email_address }}</span>
+                    </div>
+                    <div>
+                        <strong>Student Date of Birth: </strong>
+                        <span>{{ student_dict[loan.student_user_id].date_of_birth }}</span>
+                    </div>
+                    <div>
+                        <strong>University: </strong>
+                        <span>{{ university_dict[student_dict[loan.student_user_id].university_id].name }}</span>
+                    </div>
+                    <div>
+                        <strong>Interest Rate: </strong>
+                        <span>{{ loan_offers_dict[loan.bank_loan_offer_id].interest_rate }}%</span>
+                    </div>
+                    <div>
+                        <strong>Interest Type: </strong>
+                        <span>{{ loan_offers_dict[loan.bank_loan_offer_id].interest_type }}</span>   
+                    </div>
+                    <div>
+                        <strong>Loan Amount: </strong>
+                        <span>${{ loan.loan_amount }}</span>
+                    </div>
+                    <div>
+                        <strong>Loan Term: </strong>
+                        <span>{{ loan.loan_term_months }} months</span>
+                    </div>
+                    <div>
+                        <strong>Application Date: </strong>
+                        <span>{{ loan.application_date }}</span>
+                    </div>
+                    <div>
+                        <strong>Status: </strong>
+                        <span>{{ loan.status }}</span>
+                    </div>
+                    {% if loan.status == 'APPROVED' %}
+                        <div>
+                            <strong>Approval Date: </strong>
+                            <span>{{ loan.approval_date }}</span>
+                        </div>
+                    {% endif %}
+                    {% if loan.status == 'REJECTED' %}
+                        <div>
+                            <strong>Rejection Date: </strong>
+                            <span>{{ loan.approval_date }}</span>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }} | Student Loan Project{% else %}Student Loan Project{% endif %}
+{% endblock %}
+
+{% block head %}
+    <base href="/">
+    {% block styles %}
+        {{ super() }}
+        <link href="static/css/base.css" type="text/css" rel="stylesheet">
+        <link href="static/css/button.css" type="text/css" rel="stylesheet">
+        <link href="static/css/list.css" type="text/css" rel="stylesheet">
+    {% endblock %}
+	<script type="text/javascript" src="{{ url_for('static', filename = 'lib/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename = 'lib/font-awesome.js') }}"></script>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar">
+        <span class="navbar__title">Student Loan Project</span>
+        {% if session.get('user_type') == 'STUDENT' %}
+            <a class="navbar__link" href="{{ url_for('review_bank_loan_page') }}">Student Loan Overview</a>
+            <a class="navbar__link" href="{{ url_for('select_bank_loan_offer_page') }}">Apply for a Loan</a>
+            <a class="navbar__link" href="{{ url_for('monthly_payment_calculator_page') }}">Monthly Payment Calculator</a>
+        {% endif %}
+        {% if session.get('user_type') == 'BANK_OFFICIAL' %}
+            <a class="navbar__link" href="{{ url_for('bo_review_bank_loan_page') }}">Bank Loan Overview</a>
+            <a class="navbar__link" href="{{ url_for('bo_pending_application_page') }}">Pending Loan Applications</a>
+        {% endif %}
+        <a class="navbar__link" href="{{ url_for('index') }}">Non-Protected Page</a>
+        <a class="navbar__link" href="{{ url_for('protected_page') }}">Protected Page</a> 
+        <a class="navbar__link" href="{{ url_for('student_page') }}">Student Only Page</a>
+        <a class="navbar__link" href="{{ url_for('bank_official_page') }}">Bank Official Only Page</a>
+        <a class="navbar__link" href="{{ url_for('school_billing_official_page') }}">School Billing Official Only Page</a>
+        {% if session.get('logged_in') %}
+            <a class="navbar__link" href="{{ url_for('logout_page') }}">Logout</a>
+        {% else %}
+            <a class="navbar__link" href="{{ url_for('login_page') }}">Login</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        <div class="alert-container">
+        {% for message in messages %}
+            <span class='alert alert-info'>{{ message }}</span>
+        {% endfor %}
+        </div>
+    {% endwith %}
+    <div class="app-content">
+        {% block app_content %}{% endblock %}
+    </div>
+    <div class="footer"></div>
+{% endblock %}
+
+{% block scripts %}
+	{% block app_scripts %}{% endblock %}
+{% endblock %}

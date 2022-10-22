@@ -1,0 +1,13 @@
+.display-list {
+    list-style: none;
+    padding: 0;
+}
+
+.display-list-item {
+    border-bottom: 1px solid gray;
+    padding: 15px 20px;
+}
+
+.display-list-item:first-child {
+    border-top: 1px solid gray;
+}
